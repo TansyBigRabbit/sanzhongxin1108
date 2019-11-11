@@ -1,18 +1,31 @@
 <template>
 	<div >   
 		<div>
-		<!-- <el-button type="primary" style="width: 150px" @click="quitRoom">退出房间</el-button> -->
-		<div class="breadcrumb">
+		
+<div class="breadcrumb">
   <el-breadcrumb separator="/">
   <el-breadcrumb-item :to="{ path: '/home' }">首页</el-breadcrumb-item>
   <el-breadcrumb-item>党建中心系统</el-breadcrumb-item>
   <el-breadcrumb-item>面谈</el-breadcrumb-item>  
-  <el-breadcrumb-item>房间号:{{roomnum}}</el-breadcrumb-item> 
-  
+  <el-breadcrumb-item>房间号:{{pageToData.pageToRoom}}</el-breadcrumb-item> 
   </el-breadcrumb> 
+  <el-button v-if="pageToData.pageToRole=='faceToFaceCreate'" type="primary" style="width: 150px" @click="quitRoom(1)">结束面谈</el-button>
+  <el-button v-else type="primary" style="width: 150px" @click="quitRoom(2)">退出房间</el-button>
 </div> 
 		<el-row class="container">
-			<el-col :span="13">
+			<el-col :span="5" style="margin-right: 15px">
+					<el-card>
+						<span class="title">用户列表</span>
+						<el-divider ></el-divider>
+						<ul class="userUl">
+							<li v-for="(item,index) in userList">
+								<span>{{item.id}}</span>
+								<!-- <span>{{item.role}}</span> -->
+							</li>
+						</ul>
+					</el-card>
+				</el-col>
+			<el-col :span="11">
 				<div class="boxFlex">
 					<div v-for="item in video_list" :class="'boxItem'+(item.first ? ' flex-item first' : ' flex-item')" @click="unshiftThis" :data-id="item.videoId">
 								<video v-if="item.videoId == 'local'" muted :id="item.videoId" class="video-item local-video " autoplay="autoplay" data-videotype="remote"></video>
@@ -63,58 +76,47 @@
 					<video class="vedioBox" id="participant" autoplay="autoplay" data-videotype="remote"></video> 
 				</div> -->
 			</el-col> 
-			<el-col :span="7" style="margin-left: 5vw">
-				<div>
-					<!-- <el-row class="infoList">
-						<p>房间信息：</p> 
-						<el-col :span="12">
-							房间号：<span>{{roomInfo.number}}</span>
-						</el-col>
-						<el-col :span="12">
-							接访时间：<span id="mytime">{{roomInfo.startTime}}</span>
-						</el-col> 
-					</el-row>
-					 <el-divider class="divider"></el-divider> -->
-				     <el-row class="infoList">
-						<p class="userTitle">上访人员信息</p>
-						<div style="display: flex;">
-							<div style="flex: 1">
-							<img :src="petition.picturePath">	
-							</div>
-							<div style="flex: 2;display: flex;flex-direction: column;justify-content: space-around;">
-								<span>姓名：{{petition.userName}}</span>
-								<span>身份证号：{{petition.idCard}}</span>
-							</div>
+			<el-col :span="7" style="margin-left: 15px">
+				<el-card>
+						<span class="title">聊天窗口</span>
+						<el-divider ></el-divider>
+						<div>
+							<div class="chat_box">
+					<div class="sub-panel chatroom chat">
+						<div class="chatting-area">
+							<ul v-for="item in chatList">
+								<li v-if="item.isSystem" class="receiver-msg">
+									<div class="msg-wrap">
+										<p class="from">系统消息:</p>
+										<p class="msg">{{ item.content }}</p>
+									</div>
+								</li>
+								<li v-else-if="item.isSelfSend" class="sender-msg">
+									<div class="msg-wrap">
+										<p class="msg">{{ item.content }}</p>
+										<p class="from">:我</p>
+									</div>
+								</li>
+								<li v-else class="receiver-msg">
+									<div class="msg-wrap">
+										<p class="from">{{ item.who }}:</p>
+										<p class="msg">{{ item.content }}</p>
+									</div>
+								</li>
+							</ul>
 						</div>
-					</el-row>
-					 <el-divider class="divider"></el-divider>
-					<el-row class="infoList">
-						<p class="userTitle">接访访人员信息</p>
-						<ul v-if="interviewList.length>0" >
-						 <li style="display: flex;justify-content: space-between;" v-for="item in interviewList">
-						 	<span style="flex: 2">姓名：{{item.userName}}</span>
-						 	<span style="flex: 2">工号：{{item.userId}}</span>
-						 	<span style="flex: 1"></span>
-						 </li>
-						</ul>
-						<!-- <el-col :span="12">
-							身份证号：<span>510723199401180043</span>
-						</el-col> -->
-					</el-row>
+						<div class="typing-area">
+							<!-- <input type="text" class="input-element" v-model="form.msg" placeholder="输入你想要回复的内容"> -->
+							<el-input
+  							type="textarea" v-model="form.msg" placeholder="输入你想要回复的内容"></el-input>
+							<el-button class="vedio_btn" @click="handleMsgSend" type="primary" size="small">发送</el-button>
+						</div>
+					</div>
 				</div>
-				<div v-if="isRole">
-					<el-input 
-					  type="textarea"
-					  :rows="12"
-					  placeholder="请记录上访内容"
-					  v-model="submitConInfo.content"
-					  style="margin:30px 0" >
-					</el-input>
-					<div style=" width:80%;margin: 0 auto;display: flex">
-					 <el-button type="primary" @click="submitContent(1)" style="flex: 1">提交</el-button>
-					 <el-button type="primary" @click="showPetitionType" style="flex: 1">结束上访</el-button>
-				    </div>
-				</div> 
+							 
+						</div>
+					</el-card>
+			 
 			</el-col>
         </el-row>
         
@@ -190,6 +192,7 @@
 		    	pageToRole:this.$route.params.roleType, 
 		    	pageToRoom:this.$route.params.roomNum, 
 		    	interviewType:this.$route.params.interviewType, 
+		    	room:this.$route.params.room
 		    },
 		    //1103
 		    departId:JSON.parse(window.localStorage.getItem("userInfo")).departId,
@@ -308,20 +311,12 @@
     },
     petitionJoinRoom(){
       this.roomnum = this.pageToData.pageToRoom; 
-      this.roomListFlag=false;
-      //this.renderRoom();
-      //查询上访者信息
-	  this.getPetitionInfo(this.$route.params.idCardList[0]);
-      this.initWebRTC(this.pageToData.departId,"petitionJoin"); 
+      this.roomListFlag=false; 
+      this.initWebRTC();
     },
     createRoom(){ 
-      this.createRoomModel = false
-	  this.entryType = 'create';//进入类型 默认值是join
-	  this.role = 'LiveMaster';//主播 
-	  this.roomListFlag=false; 
-	  //self.renderRoom();
-	  //查询上访者信息
-	  this.getPetitionInfo(this.$route.params.idCardList[0]);
+      this.createRoomModel = false 
+	  this.roomListFlag=false;  
 	  this.initWebRTC();
 
         },
@@ -332,15 +327,16 @@
 
 		    },
        
-       initWebRTC: function(did,roleType) {
+       initWebRTC: function(did,roleType) { 
          //name=ILiveSDK.loginInfo.identifier; 
 		      var message = {
 		      	       id : 'joinRoom',
 		      	       //
 		      	       type:that.pageToData.pageToRole,
-		      	       userId:window.localStorage.getItem("userId"),
+		      	       sysUserId:window.localStorage.getItem("userId"),
 		      	       //房间名称
 		      	       interviewName:that.pageToData.pageToRoom,
+		      	       room:that.pageToData.room,
 		      	       //面谈类型
 		      	       interviewType:"XXX",
 		      	       //
@@ -349,6 +345,8 @@
                        idCardList:[window.localStorage.getItem("idCard")]
 		    		}
 		      this.sendMessage(message);
+      
+        
        },
     //初始化websocket
        initWebsocket(){
@@ -523,18 +521,18 @@
 
 	setTimeout(function() {
     var video = participant.getVideoElement();
-    userList.push({
+    that.userList.push({
 			id: name,
 			role: 1
 		});
 
 
-		//		app.chatList.push({
-		//	        who: name,
-		//	        content: "["+name + "] 新增/更新了视频",
-		//	        isSelfSend: 0,
-		//	        isSystem: 1
-		//	      });
+				app.chatList.push({
+			        who: name,
+			        content: "["+name + "] 新增/更新了视频",
+			        isSelfSend: 0,
+			        isSystem: 1
+			      });
     var options = {
 			localVideo: video, //本地流应用程序中的视频标记
 			mediaConstraints: constraints,
@@ -582,7 +580,7 @@ receiveVideo(sender) {
 				this.generateOffer(participant.offerToReceiveVideo.bind(participant));
 			});
 
-		userList.push({
+		that.userList.push({
 			id: sender,
 			role: 1
 		});
@@ -642,7 +640,7 @@ getRoomListRsp(data) {
 },
 getRoomUserRsp(data) {
 	var app = this;
-	userList = data.data.idlist;
+	that.userList = data.data.idlist;
 },
 chatRsp(data) {
 	var app = this
@@ -654,12 +652,12 @@ chatRsp(data) {
     		this.interviewList = msgData.interviewJoinUserInfoList;
     	}
     }
-	// app.chatList.push({
-	// 	who: msgData.fromUser == app.loginInfo.identifier ? '我' : msgData.fromUser,
-	// 	content: msgData.content,
-	// 	isSelfSend: msgData.fromUser == app.loginInfo.identifier ? 1 : 0,
-	// 	isSystem: msgData.isSystem != null
-	// });
+	app.chatList.push({
+		who: msgData.fromUser == app.loginInfo.identifier ? '我' : msgData.fromUser,
+		content: msgData.content,
+		isSelfSend: msgData.fromUser == app.loginInfo.identifier ? 1 : 0,
+		isSystem: msgData.isSystem != null
+	});
   
 },
 viewerResponse(message) {
@@ -691,24 +689,31 @@ getRoomList: function(opts, succ, err) {
   showPetitionType(){
    this.paramsObj={open:true,showDialog:true}
   },
-  //退出房间
-  quitRoom:function(e){ 
+
+  //退出房间 1110
+  quitRoom:function(type){
+  	var param = "";
+  if(type==1){
+  	//结束房间
+    param = "faceToFaceFinish";
+  }else if(type==2){
+  	//退出房间
+  	param = "faceToFaceLeave";
+  }
   	var self = this;
-  	console.log("关闭信访")
-  	self.paramsObj={open:false,showDialog:false}
-    
-    window.clearInterval(self.myContent); 
-	//self.roomListFlag=true;
+  	console.log("关闭...")
+  	//self.paramsObj={open:false,showDialog:false}
+    //self.roomListFlag=true;
     sendMessage({
         id: 'leaveRoom',
-        type:'interviewFinish',
-        petitionType:e
+        type: param, 
       });
     for (var key in participants) {
         participants[key].dispose();
       }
    //window.location.reload();
   },
+
   refreshPage(){
   this.$router.push({
       name:'home' 
@@ -882,6 +887,25 @@ Participant(senderName,obj) {
 				});
 				this.video_list = video_list;
 			},
+			handleMsgSend: function() {
+				var self = this;
+				var msgContent = self.form.msg;
+
+				if(!msgContent) {
+					return;
+				}
+				self.form.msg = '';
+
+				// 通过websocket发布消息
+				self.sendMessage({
+					id: 'chat',
+					type: 'groupChat',
+					roomName: this.roomName,
+					fromUser: ILiveSDK.loginInfo.identifier,
+					content: msgContent
+				});
+
+			},
 		}
 	}
 </script>
@@ -1046,6 +1070,13 @@ Participant(senderName,obj) {
 		padding: 15px 0;
 		color: #1890F5;
 		font-weight: bold;
+	}
+	/**/
+	.breadcrumb{
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		padding-bottom: 0px;
 	}
 </style>
 

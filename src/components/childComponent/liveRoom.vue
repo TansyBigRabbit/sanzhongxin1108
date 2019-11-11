@@ -592,9 +592,25 @@ chatRsp(data) {
 			ws.send(jsonMessage);
 		},
 		//
-          handleMsgSend(){
+        handleMsgSend: function() {
+				var self = this;
+				var msgContent = self.form.msg;
 
-          },
+				if(!msgContent) {
+					return;
+				}
+				self.form.msg = '';
+
+				// 通过websocket发布消息
+				self.sendMessage({
+					id: 'chat',
+					type: 'groupChat',
+					roomName: this.roomName,
+					fromUser: ILiveSDK.loginInfo.identifier,
+					content: msgContent
+				});
+
+			},
         Participant(senderName,obj) {
 		console.log("创建成员姓名:"+senderName);
 		this.name = name; 

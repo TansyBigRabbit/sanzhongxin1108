@@ -30,7 +30,8 @@
 <el-row id="menuRow">
 
 
-<el-col id="menu" :span="isCollapse?2:4"><el-aside class="overflow_y">
+<el-col id="menu" :span="isCollapse?2:4">
+  <el-aside style="overflow-y: auto">
 <el-menu :default-active="$route.path"  class="el-menu-vertical-demo" @open="handleOpen" @close="handleClose" :collapse="isCollapse">
   <el-submenu :index="''+index" v-for="(item,index) in submenuList">
     <template slot="title">
@@ -500,6 +501,7 @@ a{
   .el-aside ul[role="menubar"]{ 
   height: 100vh ;
   padding-top: 10px;
+  overflow-y: auto;
   } 
   .el-submenu__title,.el-menu-item{ 
   }

@@ -63,6 +63,10 @@ export default {
 	studyLiveRoomList: hosturl + '/academicLiveBroadcastTotalController/queryListWithPage',
 	//视频类别
 	videoType: hosturl + "/academicAdvocacy/academic-type/queryListWithNoPage",
+	//面谈房间列表
+	faceRoomList: hosturl + "/interview/total/queryListWithPage",
+	//面谈房间明细
+	faceRoomDetail: hosturl + "/interview/detail/queryListWithNoPage",
 	user: {
 		list: hosturl + '/userinfo/queryListWithPage',
 		insert: hosturl + '/userinfo/insert',

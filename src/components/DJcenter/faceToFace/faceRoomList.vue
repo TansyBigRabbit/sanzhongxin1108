@@ -19,13 +19,13 @@
 		<!-- <el-button type="primary" style="width: 150px" @click="createRoomModel=true">创建房间</el-button> -->
         <div>
 			<el-row style="padding-top: 15px;">
-				<el-col v-if="roomList.length>0" v-for="(item,index) in roomList" :data-roomnum="item.info.roomnum" :key="index" class="margin_r roomBox" :span="5">
+				<el-col v-if="roomList.length>0" v-for="(item,index) in roomList" :data-roomnum="item.interviewName" :key="index" class="margin_r roomBox" :span="5">
 				 <el-card :body-style="{ padding: '5px' }">
 			      <img :src="imgUrl" class="image">
 			      <div style="padding: 14px;">
-			        <span>{{item.info.roomnum}}</span>
+			        <span>{{item.interviewName}}</span>
 			        <div class="bottom clearfix">
-			          <el-button v-if='item.info.memsize<6' type="text" @click="joinRoom(item)">加入房间</el-button>
+			          <el-button v-if='item.totalNumPeople<6' type="text" @click="checkUserType(item)">加入房间</el-button>
 			          <span v-else>房间满员，无法加入</span>
 			        </div>
 			      </div>
@@ -36,8 +36,8 @@
 				</el-card>  
 			</el-row>
 		</div> 
-		</div>
-         
+		</div 
+        
 		<!-- 输入房间名 -->
 		<el-dialog
 		  title="创建房间"
@@ -68,12 +68,14 @@
 
 				},
 				imgUrl:require('../../../assets/images/room_bg.png'),
-				roomList:[{
-					info:{
-						roomnum:"测试数据01",
-						memsize:7,
-					}
-				}],
+				roomList:[
+				// {
+				// 	info:{
+				// 		roomnum:"测试数据01",
+				// 		memsize:7,
+				// 	}
+				// }
+				],
 				hasRoom:true,
 				createRoomDialog:false,
 				createRoomName:"",//创建房间时输入的房间名称
@@ -82,10 +84,56 @@
 		},
 		created(){
         that = this;
+        that.getFaceRoomList();
 		},
 		methods:{
-		joinRoom(obj){
-
+		getFaceRoomList(){
+		console.log("获取房间列表");
+        that.$http.get(that.$ports.faceRoomList,{
+        	pageNum:1,
+        	size:10,
+        	stateList:'0,1'
+        }).then(res=>{
+        	console.log(res.data);
+        	that.roomList = res.data.data;
+        })
+		},
+		//查询当前登录者的角色（创建者/参与者）
+		checkUserType(obj){
+		this.createRoomDialog = false; 
+        that.$http.get(that.$ports.faceRoomDetail,{
+        	totalId:obj.id,
+        	idCard:localStorage.getItem('idCard')
+        }).then(res=>{
+        	console.log(res.data);
+        	if(res.data.data.length>0){
+            if(res.data.data[0].type==0){
+             that.$router.push({
+                name:'FaceVideoRoom', 
+                params:{
+                roleType:"faceToFaceCreate",
+                roomNum:obj.interviewName,
+                room:obj.roomName,  
+                interviewType:"xxx"
+                }});
+            }else{
+             that.joinRoom(obj);
+            }
+        	}else{
+             that.joinRoom(obj);
+        	}
+        })
+		},
+		joinRoom(obj){  
+			//1103 创建面谈房间
+			that.$router.push({
+                name:'FaceVideoRoom', 
+                params:{
+                roleType:"faceToFaceJoin",
+                roomNum:obj.interviewName,
+                room:obj.roomName,  
+                interviewType:"xxx"
+                }});
 		},
 		createRoom(){
 			this.createRoomDialog = false; 
@@ -95,6 +143,7 @@
                 params:{
                 roleType:"faceToFaceCreate",
                 roomNum:that.createRoomName,  
+                room:"",  
                 interviewType:"xxx"
                 }});
 		},
