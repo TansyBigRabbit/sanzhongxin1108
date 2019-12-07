@@ -3,7 +3,8 @@
 //const hosturl = 'http://47.102.139.17:9090/threeCentreProject';
 
 var hosturl = '';
-process.env.NODE_ENV === 'development' ? hosturl = '/api' : hosturl = "http://47.102.139.17:9090/threeCentreProject";
+//process.env.NODE_ENV === 'development' ? hosturl = '/api' : hosturl = "http://47.102.139.17:9090/threeCentreProject";
+process.env.NODE_ENV === 'development' ? hosturl = '/api' : hosturl = "http://10.10.100.180:8080/threeCentreProject";
 export default {
 	department: hosturl + '/depart/superiorDepart',
 	userInfo: hosturl + '/userinfo',
@@ -61,6 +62,8 @@ export default {
 	studyLiveCreate: hosturl + '/academicLiveBroadcastTotalController/insert',
 	//学宣直播房间列表
 	studyLiveRoomList: hosturl + '/academicLiveBroadcastTotalController/queryListWithPage',
+	//学宣房间详情
+	studyLiveRoomDetail: hosturl + '/academicLiveBroadcastTotalController/queryListWithNoPage',
 	//视频类别
 	videoType: hosturl + "/academicAdvocacy/academic-type/queryListWithNoPage",
 	//面谈房间列表

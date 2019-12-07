@@ -4,18 +4,18 @@
 	      <div class="breadcrumb">
 			  <el-breadcrumb separator="/">
 			  <el-breadcrumb-item :to="{ path: '/home' }">首页</el-breadcrumb-item>
-			  <el-breadcrumb-item>党建中心系统</el-breadcrumb-item>
-			  <el-breadcrumb-item>面谈</el-breadcrumb-item> 
-			  <el-breadcrumb-item>面谈记录</el-breadcrumb-item> 
+			  <el-breadcrumb-item>综治中心系统</el-breadcrumb-item>
+			  <el-breadcrumb-item>综治中心</el-breadcrumb-item> 
+			  <el-breadcrumb-item>我的综治</el-breadcrumb-item> 
 			  </el-breadcrumb>
 			</div> 
     <el-tabs class="tab_box" type="border-card" @tab-click="handleClick">
-    <el-tab-pane label="所有记录">
+    <el-tab-pane label="我创建的">
     	 <allRecordsCom :params="params"></allRecordsCom>
     </el-tab-pane>
-    <!-- <el-tab-pane label="我的记录">
+    <el-tab-pane label="我参与的">
     	 <myRecordsCom :params="params1" v-on:changeTimes="changeTimes"></myRecordsCom>
-    </el-tab-pane> -->
+    </el-tab-pane>
     </el-tabs>
 
 	</div>
@@ -23,20 +23,20 @@
 <script>
 var that;
 import allRecordsCom from '../../childComponent/recordsCom'
-//import myRecordsCom from '../../childComponent/myRecordsCom'
+import myRecordsCom from '../../childComponent/myRecordsCom'
 export default{
-    components:{allRecordsCom},
+    components:{allRecordsCom,myRecordsCom},
 	data(){
 	return{
 		//传给组件的参数
      params:{
-     	modal:"face",
+     	modal:"zongzhi",
      	isFirst:true,
      	times:0, 
      	open:true
      },
      params1:{
-     	modal:"face",
+     	modal:"zongzhi",
      	isFirst:false,
      	times:0, 
      	open:false

@@ -13,9 +13,9 @@
     <el-tab-pane label="所有记录">
     	 <allRecordsCom :params="params"></allRecordsCom>
     </el-tab-pane>
-    <el-tab-pane label="我的记录">
+    <!-- <el-tab-pane label="我的记录">
     	 <myRecordsCom :params="params1" v-on:changeTimes="changeTimes"></myRecordsCom>
-    </el-tab-pane>
+    </el-tab-pane> -->
     </el-tabs>
 
 	</div>
@@ -23,9 +23,9 @@
 <script>
 var that;
 import allRecordsCom from '../../childComponent/recordsCom'
-import myRecordsCom from '../../childComponent/myRecordsCom'
+//import myRecordsCom from '../../childComponent/myRecordsCom'
 export default{
-    components:{allRecordsCom,myRecordsCom},
+    components:{allRecordsCom},
 	data(){
 	return{
 		//传给组件的参数

@@ -572,6 +572,5 @@ const toolbarOptions = [
 }
 .ql-editor{
          height:30vh;
-     }
- 
+     } 
 </style>

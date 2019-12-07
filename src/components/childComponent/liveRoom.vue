@@ -10,7 +10,8 @@
 			  <el-breadcrumb-item>房间号：{{liveRoomName}}</el-breadcrumb-item> 
 			  </el-breadcrumb>
 			</div>  
-				<el-button type="primary" @click="">离开房间</el-button> 
+				<el-button v-if="params01.type=='create'" type="primary" style="width: 150px" @click="quitRoom(1)">结束直播</el-button>
+                <el-button v-else type="primary" style="width: 150px" @click="quitRoom(2)">退出房间</el-button>
 			</div>
 			<el-divider class="divider"></el-divider>
 			<div class="live_conbox">
@@ -159,6 +160,7 @@
 	          if(res.data.errorCode==0){   
 	           //全局变量存储token
 	           ILiveSDK.loginInfo.token = res.data.data.token; 
+	           ILiveSDK.loginInfo.identifier = res.data.data.userName;
 	           name = res.data.data.userName;
 	           that.initWebsocket(type); 
 	           return;
@@ -284,8 +286,8 @@
 		id : 'joinRoom',
 		name : name,//用户名 
 		type : 'academic',// 
-		room:'',
-		userId:window.localStorage.getItem("userId"),
+		room:that.params01.roomName01,
+		sysUserId:window.localStorage.getItem("userId"),
 		academicType:that.params01.videoType,
 		academicName:that.params01.roomName
 		}
@@ -330,9 +332,15 @@
 							console.info('Invoking SDP offer callback function ' + location.host);
 							var message = {
 								id : 'viewerRoom',
-								roomName : that.params01.roomName01,
-								username : that.params01.academicUserName,
+								type:'academicWatchJoin',
+								sysUserId:window.localStorage.getItem("userId"),
+								totalId:that.params01.totalId,//直播记录的id
+								idCardList:this.$route.params.idCardList,
+
+								// roomName : that.params01.roomName01,
+								// username : that.params01.academicUserName,
 								sdpOffer : offerSdp
+
 							}
 							
 							sendMessage(message);
@@ -408,7 +416,7 @@
 
 	setTimeout(function() {
     var video = participant.getVideoElement();
-    userList.push({
+    that.userList.push({
 			id: name,
 			role: 1
 		});
@@ -467,7 +475,7 @@ receiveVideo(sender) {
 				this.generateOffer(participant.offerToReceiveVideo.bind(participant));
 			});
 
-		userList.push({
+		that.userList.push({
 			id: sender,
 			role: 1
 		});
@@ -527,7 +535,7 @@ getRoomListRsp(data) {
 },
 getRoomUserRsp(data) {
 	var app = this;
-	userList = data.data.idlist;
+	that.userList = data.data.idlist;
 },
 chatRsp(data) {
 	var app = this
@@ -540,9 +548,9 @@ chatRsp(data) {
     	}
     }
 	app.chatList.push({
-		who: msgData.fromUser == app.loginInfo.identifier ? '我' : msgData.fromUser,
+		who: msgData.fromUser == ILiveSDK.loginInfo.identifier ? '我' : msgData.fromUser,
 		content: msgData.content,
-		isSelfSend: msgData.fromUser == app.loginInfo.identifier ? 1 : 0,
+		isSelfSend: msgData.fromUser == ILiveSDK.loginInfo.identifier ? 1 : 0,
 		isSystem: msgData.isSystem != null
 	});
   
@@ -560,22 +568,31 @@ chatRsp(data) {
 		}
 	},
         //退出房间
-	  quitRoom:function(e){ 
-	  	var self = this;
-	  	console.log("关闭信访")
-	  	self.paramsObj={open:false,showDialog:false}
-	    
-	    window.clearInterval(self.myContent); 
-		//self.roomListFlag=true;
-	    sendMessage({
-	        id: 'leaveRoom',
-	        type:'interviewFinish',
-	        petitionType:e
-	      });
-	    for (var key in participants) {
-	        participants[key].dispose();
-	      }
-	   //window.location.reload();
+	  quitRoom:function(type){ 
+	  		  var obj = {};
+			  if(type==1){
+			  	//结束直播 
+			    obj = {
+			    	id:'leaveRoom',
+			    	type:'academicLeave'
+                 }
+			  }else if(type==2){
+			  	//退出房间
+			    obj = {
+			    	id:'leaveWatchRoom',
+			    	type:'academicWatchLeave',
+			    	totalId:that.params01.totalId,
+			    	sysUserId:localStorage.getItem("userId")
+                 }
+			  }
+			  	var self = this;
+			  	console.log("关闭...")
+			  	//self.paramsObj={open:false,showDialog:false}
+			    //self.roomListFlag=true;
+			    sendMessage(obj);
+			    for (var key in participants) {
+			        participants[key].dispose();
+			      } 
 	  },
 	  refreshPage(){
 	  this.$router.push({

@@ -1401,8 +1401,7 @@ button.toast-close-button {
 	-webkit-flex-direction: row;
 }
 
-svg {
-	width: 48px;
+.svgclass{	width: 48px;
 	height: 48px;
 	border-radius: 48px;
 	box-shadow: 2px 2px 24px #444;

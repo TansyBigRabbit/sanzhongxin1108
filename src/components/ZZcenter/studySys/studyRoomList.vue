@@ -34,6 +34,16 @@
 					{{roomTextInfo}}
 				</el-card>  
 			</el-row>
+			<!-- 分页插件 -->
+				 <el-pagination
+			        v-if="roomList.length>0"
+			        style="text-align: center;"
+			        layout="prev, pager, next"
+			        background
+			        :total="roomTotal"
+			        :current-page="currentPage"
+			        @current-change="handleCurrentChange">
+			      </el-pagination>
 		</div> 
 		</div> 
          <!--直播间-->
@@ -81,7 +91,10 @@
 				roomTextInfo:"暂无房间",
 				//
 				type:'',
-				videoTypes:[]
+				videoTypes:[],
+				//
+				roomTotal:0,
+				currentPage:1
 			}
 		},
 		created(){
@@ -93,12 +106,13 @@
 		getRoomList(){
         console.log("获取房间列表");
         that.$http.get(that.$ports.studyLiveRoomList,{
-        	pageNum:1,
+        	pageNum:that.currentPage,
         	size:10,
         	isComplete:0
         }).then(res=>{
         	if(res.data.code==0){
                 that.roomList = res.data.data;
+                that.roomTotal = res.data.page.total;
         	}else{
         		that.$message.error("房间列表获取失败");
         	}
@@ -116,15 +130,44 @@
          })
       },
 		joinRoom(obj){
-			this.createRoomDialog = false;
-			this.roomFlag = true; 
-        that.params01 = {
-			open:true,
-            type:'watch',
-            roomName:obj.academicName, 
-            roomName01:obj.roomName,
-            academicUserName:obj.academicUserName
-			}
+			
+			this.findUserRole(obj);
+  
+		},
+		findUserRole(obj01){
+         //进入房间之前查询该用户是不是主播
+         var obj = {
+         	id:obj01.id,
+         	userId:window.localStorage.getItem("userId")
+         }
+         that.$http.get(that.$ports.studyLiveRoomDetail,obj).then(res=>{
+         	console.log(res.data);
+         	if(res.data.code==0){
+         		that.createRoomDialog = false;
+			    that.roomFlag = true; 
+               if(res.data.data.length>0){
+               	console.log("主播异常退出");
+                    that.params01 = {
+					open:true,
+		            type:'create',
+		            roomName:obj01.academicName, 
+		            roomName01:obj01.roomName,
+		            videoType:obj01.type
+					}
+               }else{
+                    that.params01 = {
+					open:true,
+		            type:'watch',
+		            roomName:obj01.academicName, 
+		            roomName01:obj01.roomName,
+		            academicUserName:obj01.academicUserName,
+		            totalId:obj01.id
+					}
+               }
+         	}else{
+         		that.$message.error("操作失败");
+         	}
+         })
 		},
 		createRoom(){
 			if(!that.createRoomName){
@@ -137,12 +180,17 @@
 			open:true,
             type:'create',
             roomName:that.createRoomName,
+            roomName01:'',
             videoType:that.type
 			}
 		},
 		showCreateModal(){
 			this.createRoomDialog = true;
 			this.createRoomName = "";
+		},
+		handleCurrentChange(val){
+			console.log("当前页数:"+val);
+			that.getRoomList();
 		}
 		}
 	}

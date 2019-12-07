@@ -81,6 +81,7 @@
 </template>
 
 <script>
+	var _this;
 	export default {
 		name: 'login',
 		data() {
@@ -101,6 +102,7 @@
 			}
 		},
 		created(){
+			_this = this;
         //window.localStorage.clear();
         //判断是否通过注销而来
         if(this.$route.params.isLogout){ 
@@ -118,21 +120,21 @@
 		},
 		methods: {
 			login: function(type) {
-				var _this = this;
-				var obj = {};
-				if(type=="auto"){
-	                 obj={
+				let _this = this;
+				this.obj = {};
+				if(typeof type!="undefined"){
+	                this.obj={
 						userId: window.localStorage.getItem("account"),
 						password: window.localStorage.getItem("password")
 					}
 				}else{
-					obj={
+					this.obj={
 						userId: this.userName,
 						password: this.password
 					}
 				}
 				_this.loading=true;
-				this.$http.post(this.$ports.login, obj).then(function(res) {
+				this.$http.post(this.$ports.login, this.obj).then(function(res) {
 					console.log("登录者信息.....");
 					console.log(res.data);
 					if(res.data.code == 0) {

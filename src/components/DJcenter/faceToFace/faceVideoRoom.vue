@@ -32,7 +32,7 @@
 								<video v-else :id="item.videoId" class="video-item" autoplay="autoplay" data-videotype="remote"></video>
 								<div id="button-container">
 
-									<svg @click="toggleFullScreen(item.videoId)" xmlns="http://www.w3.org/2000/svg" viewbox="0 0 1024 1024" :class="open.screen?'off':'on'">
+									<svg class="svgclass" @click="toggleFullScreen(item.videoId)" xmlns="http://www.w3.org/2000/svg" viewbox="0 0 1024 1024" :class="open.screen?'off':'on'">
 										<circle cx="524" cy="524" r="530">
 											<title>full</title>
 										</circle>
@@ -42,14 +42,14 @@
 
 									</svg>
 
-									<svg v-if="item.videoId == 'local'" @click="toggleCamera(item.videoId)" xmlns="http://www.w3.org/2000/svg" viewbox="-10 -10 68 68" :class="open.video?'on':'off'">
+									<svg class="svgclass" v-if="item.videoId == 'local'" @click="toggleCamera(item.videoId)" xmlns="http://www.w3.org/2000/svg" viewbox="-10 -10 68 68" :class="open.video?'on':'off'">
 										<circle cx="24" cy="24" r="34">
 											<title>Mute video</title>
 										</circle>
 										<path class="off" transform="scale(0.6), translate(17,16)" d="M40 8H15.64l8 8H28v4.36l1.13 1.13L36 16v12.36l7.97 7.97L44 36V12c0-2.21-1.79-4-4-4zM4.55 2L2 4.55l4.01 4.01C4.81 9.24 4 10.52 4 12v24c0 2.21 1.79 4 4 4h29.45l4 4L44 41.46 4.55 2zM12 16h1.45L28 30.55V32H12V16z" fill="white" />
 										<path class="on" transform="scale(0.6), translate(17,16)" d="M40 8H8c-2.21 0-4 1.79-4 4v24c0 2.21 1.79 4 4 4h32c2.21 0 4-1.79 4-4V12c0-2.21-1.79-4-4-4zm-4 24l-8-6.4V32H12V16h16v6.4l8-6.4v16z" fill="white" />
 									</svg>
-									<svg v-if="item.videoId == 'local'" @click="toggleMic(item.videoId)" xmlns="http://www.w3.org/2000/svg" viewbox="-10 -10 68 68" :class="open.audio?'on':'off'">
+									<svg class="svgclass" v-if="item.videoId == 'local'" @click="toggleMic(item.videoId)" xmlns="http://www.w3.org/2000/svg" viewbox="-10 -10 68 68" :class="open.audio?'on':'off'">
 										<title>title</title>
 										<circle cx="24" cy="24" r="34">
 											<title>Mute audio</title>
@@ -305,9 +305,7 @@
       this.initWebRTC(JSON.parse(window.localStorage.getItem("userInfo")).departId,"interviewJoin"); 
       //开启计时器，开始定时任务
       //this.time_fun();
-      this.myContent = window.setInterval(function () {
-                app.submitContent();
-            }, 60000);
+      
     },
     petitionJoinRoom(){
       this.roomnum = this.pageToData.pageToRoom; 
@@ -527,12 +525,13 @@
 		});
 
 
-				app.chatList.push({
-			        who: name,
-			        content: "["+name + "] 新增/更新了视频",
-			        isSelfSend: 0,
-			        isSystem: 1
-			      });
+	app.chatList.push({
+		who: name,
+		content: "["+name + "] 新增/更新了视频",
+		isSelfSend: 0,
+		isSystem: 1
+		});
+
     var options = {
 			localVideo: video, //本地流应用程序中的视频标记
 			mediaConstraints: constraints,
@@ -653,9 +652,9 @@ chatRsp(data) {
     	}
     }
 	app.chatList.push({
-		who: msgData.fromUser == app.loginInfo.identifier ? '我' : msgData.fromUser,
+		who: msgData.fromUser == ILiveSDK.loginInfo.identifier ? '我' : msgData.fromUser,
 		content: msgData.content,
-		isSelfSend: msgData.fromUser == app.loginInfo.identifier ? 1 : 0,
+		isSelfSend: msgData.fromUser == ILiveSDK.loginInfo.identifier ? 1 : 0,
 		isSystem: msgData.isSystem != null
 	});
   
@@ -729,6 +728,7 @@ getRoomList: function(opts, succ, err) {
           if(res.data.errorCode==0){   
            //全局变量存储token
            ILiveSDK.loginInfo.token = res.data.data.token; 
+           ILiveSDK.loginInfo.identifier = res.data.data.userName;
            name = res.data.data.userName;
            _this.initWebsocket(); 
            return;

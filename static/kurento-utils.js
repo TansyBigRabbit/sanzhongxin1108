@@ -1,3 +1,6 @@
+//1113修改日志
+//禁用麦克风获取 68行 327行 由true改为false 
+//196行才是关键哈 禁用麦克风
 (function(f) {
 	if (typeof exports === "object" && typeof module !== "undefined") {
 		module.exports = f()
@@ -65,8 +68,16 @@
 					};
 				}
 			}
+			// var MEDIA_CONSTRAINTS = {
+			// 	audio: true,
+			// 	video: {
+			// 		width: 640,
+			// 		framerate: 15
+			// 	}
+			// };
+			//1113
 			var MEDIA_CONSTRAINTS = {
-				audio: true,
+				audio: false,
 				video: {
 					width: 640,
 					framerate: 15
@@ -180,8 +191,19 @@
 				var localVideo = options.localVideo;
 				var remoteVideo = options.remoteVideo;
 				var videoStream = options.videoStream;
-				var audioStream = options.audioStream;
-				var mediaConstraints = options.mediaConstraints;
+				var audioStream = options.audioStream; 
+				//1113
+				var mediaConstraints = {
+					audio:false,
+					video:{
+						mandatory:{
+							maxHeight:240,
+							maxWidth:320,
+							minFrameRate:15
+						}
+					}
+				}
+				//var mediaConstraints = options.mediaConstraints;
 				var connectionConstraints = options.connectionConstraints;
 				var pc = options.peerConnection;
 				var sendSource = options.sendSource || 'webcam';
@@ -313,7 +335,8 @@
 					var offerAudio = true;
 					var offerVideo = true;
 					if (mediaConstraints) {
-						offerAudio = typeof mediaConstraints.audio === 'boolean' ? mediaConstraints.audio : true;
+						//1113 327行 由true改为false
+						offerAudio = typeof mediaConstraints.audio === 'boolean' ? mediaConstraints.audio : false;
 						offerVideo = typeof mediaConstraints.video === 'boolean' ? mediaConstraints.video : true;
 					}
 					var browserDependantConstraints = {

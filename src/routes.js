@@ -20,10 +20,13 @@ import FaceRoomList from './components/DJcenter/faceToFace/faceRoomList'
 import FaceRecords from './components/DJcenter/faceToFace/faceRecords'
 import FaceStatic from './components/DJcenter/faceToFace/faceStatic'
 import FaceVideoRoom from './components/DJcenter/faceToFace/faceVideoRoom'
+import MyRecordFace from './components/DJcenter/faceToFace/myRecordFace'
 //综治中心
 import zzRecords from './components/ZZcenter/zongzhiCenter/zzRecords'
 import zzRoomList from './components/ZZcenter/zongzhiCenter/zzRoomList'
 import zzStatic from './components/ZZcenter/zongzhiCenter/zzStatic'
+import zzMyRecord from './components/ZZcenter/zongzhiCenter/zzMyRecord'
+
 //学宣
 import StudyVideoList from './components/ZZcenter/studySys/studyVideoList'
 import StudyRoomList from './components/ZZcenter/studySys/StudyRoomList'
@@ -118,6 +121,11 @@ export const routes = [{
 			name: 'FaceVideoRoom',
 			component: FaceVideoRoom,
 		},
+		{
+			path: '/home/MyRecordFace',
+			name: 'MyRecordFace',
+			component: MyRecordFace,
+		},
 		//综治中心
 		{
 			path: '/home/zzRecords',
@@ -131,6 +139,10 @@ export const routes = [{
 			path: '/home/zzStatic',
 			name: 'zzStatic',
 			component: zzStatic,
+		},{
+			path: '/home/zzMyRecord',
+			name: 'zzMyRecord',
+			component: zzMyRecord,
 		},
 		//学宣
 		{

@@ -34,7 +34,18 @@
 				<el-card v-if="!hasRoom||roomList.length==0" class="letterCard">
 					{{roomTextInfo}}
 				</el-card>  
+				
 			</el-row>
+			<!-- 分页插件 -->
+				 <el-pagination
+			        v-if="roomList.length>0"
+			        style="text-align: center;"
+			        layout="prev, pager, next"
+			        background
+			        :total="roomTotal"
+			        :current-page="currentPage"
+			        @current-change="handleCurrentChange">
+			      </el-pagination>
 		</div> 
 		</div 
         
@@ -63,6 +74,9 @@
 			return{
 				params:{show:true},
 				roomFlag:true,
+				//
+				currentPage:1,
+				roomTotal:0,
 				//传给直播间的参数
 				params01:{
 
@@ -90,12 +104,13 @@
 		getFaceRoomList(){
 		console.log("获取房间列表");
         that.$http.get(that.$ports.faceRoomList,{
-        	pageNum:1,
+        	pageNum:that.currentPage,
         	size:10,
         	stateList:'0,1'
         }).then(res=>{
         	console.log(res.data);
         	that.roomList = res.data.data;
+        	that.roomTotal = res.data.page.total;
         })
 		},
 		//查询当前登录者的角色（创建者/参与者）
@@ -150,6 +165,12 @@
 		showCreateModal(){
 			this.createRoomDialog = true;
 			this.createRoomName = "";
+		},
+		handleCurrentChange(val){
+			console.log("当前页数"+val);
+			that.currentPage = val;
+			that.getFaceRoomList();
+
 		}
 		}
 	}
