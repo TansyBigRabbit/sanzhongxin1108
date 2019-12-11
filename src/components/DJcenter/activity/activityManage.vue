@@ -55,6 +55,12 @@
       align="center"
       label="活动开始时间" >
     </el-table-column>
+    <el-table-column
+     :formatter="dateFormate"
+      prop="createTime"
+      align="center"
+      label="活动创建时间" >
+    </el-table-column> 
     <el-table-column 
       prop="state"
       align="center"
@@ -352,10 +358,11 @@ const toolbarOptions = [
 
           },
           //日期格式化
-      		dateFormate(row, column, cellValue, index){ 
-             return row.activityStartTime.slice(0,row.activityStartTime.length-2);
+          dateFormate(row, column, cellValue, index){
+          var num =  cellValue.length;
+             return cellValue.slice(0,num-2);
+
            }, 
-          
         //展示活动详情框
         showModel(type,obj){ //type:add,edit
           this.conDetail=true;

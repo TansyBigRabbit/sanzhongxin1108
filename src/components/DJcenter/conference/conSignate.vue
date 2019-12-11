@@ -47,6 +47,12 @@
     <span v-if="scope.row.status==0">未开始</span>
     </template>
     </el-table-column>
+    <el-table-column
+      :formatter="dateFormate"
+      prop="createTime"
+      align="center"
+      label="会议创建时间" >
+    </el-table-column>
     <el-table-column 
       label="操作" 
       align="center">
@@ -124,10 +130,12 @@
             this.currentPage = currentPage;
             this.getMySignMeeting(this.myCreateMeeting.currentPage,this.myCreateMeeting.pageSize);
            },
-      		dateFormate(val){
-            var num = val.startTime.length;
-             return val.startTime.slice(0,num-2)
-      		},
+      		//日期格式化
+          dateFormate(row, column, cellValue, index){
+          var num =  cellValue.length;
+             return cellValue.slice(0,num-2);
+
+           }, 
           enterMeeting(row){
             console.log("加入会议房间......");
           if(row.creator== window.localStorage.getItem('userId')){

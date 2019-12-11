@@ -22,9 +22,12 @@
           label="序号" >
         </el-table-column> 
         <el-table-column 
-          prop="name"
           align="center"
-          label="名称" >
+          label="房间名称" >
+          <template slot-scope="scope">
+            <div v-if="type=='face'">{{scope.row.interviewName}}</div>
+            <div v-else>{{scope.row.comprehensiveTreatmentName}}</div>
+          </template> 
         </el-table-column> 
         <el-table-column 
           prop="userName"
@@ -32,11 +35,17 @@
           label="创建人" > 
         </el-table-column>
         <el-table-column 
+          prop="departName"
+          align="center"
+          label="创建人所在部门" > 
+        </el-table-column>
+        <!-- <el-table-column 
           prop="participants"
           align="center"
           label="参与人" > 
-        </el-table-column>  
+        </el-table-column>   -->
         <el-table-column 
+        :formatter="dateFormate"
           prop="createTime"
           align="center"
           label="创建时间" > 
@@ -58,10 +67,16 @@
                 layout="total, sizes, prev, pager, next, jumper"
                 :total="total">
             </el-pagination>
+  <!--查看详情-->
+  <el-dialog  title="记录详情"  :visible.sync="conDetail">
+  <div class="dialogBox"> 
+     <video style="width: 100%" :src="videoPath" controls="controls"></video>
+   </div>
+</el-dialog>
 </div>
 </template>
 <script>
-	var that;
+	var that; 
 export default{
     name:"",
     props:{
@@ -75,14 +90,20 @@ export default{
      total:0,
      //
      searchForm:{},
-     dataList:[{
-        id:"1",
-        name:"测试数据1",
-        userName:"陈大颖",
-        participants:"11,22,33,55,66",
-        createTime:"2109-10-25 22:12:17",
-        vedioPaths:[{path:"11.mp4"}],
-     }]
+     dataList:[
+     // {
+     //    id:"1",
+     //    name:"测试数据1",
+     //    userName:"陈大颖",
+     //    participants:"11,22,33,55,66",
+     //    createTime:"2109-10-25 22:12:17",
+     //    vedioPaths:[{path:"11.mp4"}],
+     // }
+     ],
+     //
+     conDetail:false,
+     type:"zz",
+     videoPath:"",
 	}
 	},
 	watch:{
@@ -106,39 +127,57 @@ export default{
      if(that.params.isFirst){
      	if(that.params.modal=="zongzhi"){
      		console.log("zongzhi 第一次触发");
-            that.getDataList("zz");
+            that.getDataList();
+            that.type = "zz";
      	}else{
      		console.log("face 第一次触发");
-            that.getDataList("face");
+            that.getDataList();
+            that.type = "face";
      	}
      }
 	},
     methods:{
-       getDataList(name){
+      //日期格式化
+          dateFormate(row, column, cellValue, index){
+          var num =  cellValue.length;
+             return cellValue.slice(0,num-2);
+
+           }, 
+       getDataList(){
         var obj = Object.assign(that.searchForm,{
             pageSize:that.pageSize,
             num:that.currentPage
         });
-        //that.createLoading = true;
-        //var url = that.$ports[name].list;
-        //that.$http.post(url,obj).then(res=>{
-        //     that.createLoading = false;
-        //     console.log(res);
-        //     if(res.data.code==0){
-        //         that.dataList = res.data.data
-        //     }else{
-        //         that.$message.error(res.data.msg);
-        //     }
-        // })
+        that.createLoading = true;
+        if(that.type=="zz"){
+          var url = that.$ports.zzRoomList
+        }else{
+          var url = that.$ports.faceRoomList
+        } 
+        that.$http.get(url,obj).then(res=>{
+            that.createLoading = false;
+            console.log(res);
+            if(res.data.code==0){
+                that.dataList = res.data.data
+                that.total = res.data.page.total;
+            }else{
+                that.$message.error(res.data.msg);
+            }
+        })
        },
        checkDetail(row){
-
+        that.videoPath = row.vediepath;
+        that.conDetail=true;
        },
        handleSizeChange(val){
         console.log("当前页数"+val);
+        that.pageSize = val;
+        that.getDataList();
        },
        handleCurrentChange(val){
         console.log("当前页码"+val);
+        that.currentPage = val;
+        that.getDataList();
        },
        reset(name){
         that[name]={};

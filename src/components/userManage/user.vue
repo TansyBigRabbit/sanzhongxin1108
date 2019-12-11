@@ -83,8 +83,8 @@
         </el-pagination>  
   </el-card>
   <!-- 详情弹窗 -->
-  <el-dialog  :title="dialogTitle" :visible.sync="conDetail">
-  <el-form :model="userDetail" :rules="rules" ref="userDetail" class="meeting_form">
+  <el-dialog :title="dialogTitle" :visible.sync="conDetail">
+  <el-form v-loading="detailLoading" :model="userDetail" :rules="rules" ref="userDetail" class="meeting_form">
     <el-form-item label="用户名称" prop="userName">
       <el-input v-model="userDetail.userName" ></el-input>
     </el-form-item>
@@ -104,10 +104,17 @@
     </el-form-item>  
     <el-form-item label="电话号码" prop="telePhone ">
       <el-input class="notEdit" v-model="userDetail.telePhone " ></el-input>
-    </el-form-item>  
-    <el-form-item label="所属部门" prop="departName">
+    </el-form-item>   
+   <!--  <el-form-item label="所属部门" prop="departName">
       <el-input class="notEdit" v-model="userDetail.depart.departName" ></el-input>
-    </el-form-item>  
+    </el-form-item>  --> 
+    <el-form-item label="所属部门" prop="departId ">
+    <el-select  v-model="userDetail.depart.departId" filterable >
+        <el-option v-for="item1 in department_country"
+        :key="item1.departId" :label='item1.departName' :value="item1.departId"></el-option> 
+      </el-select> 
+    </el-form-item>
+
     <el-form-item label="状态" prop="state">
       <el-select style="width: 25%" v-model="userDetail.state" placeholder="请选择状态">
         <el-option v-for="item in stateList" :label='item.name' :value='item.id'></el-option>  
@@ -174,11 +181,18 @@
           idCard: [
             { required: true, message: '请输入身份证号码', trigger: 'blur' }, 
           ]  
-			}
+			},
+      //部门数据
+      department_country:[],
+      //详情页面loading
+      detailLoading:false
     }
 		},
 		created(){
+     
+        this.department_country = JSON.parse(window.localStorage.getItem('departInfo'));
         this.getUserList(1,10);
+
 		},
 		methods:{ 
         getUserList(num,size){
@@ -220,12 +234,14 @@
                $("input").attr('disabled');
                _this.dialogTitle="用户信息详情";
             }
+            _this.detailLoading=true;
             //查询单条数据v
            this.$http.get(this.$ports.user.findById,{ 
             'userId':obj.userId
            }).then(res=>{
           console.log("findbyId......");
           console.log(res.data); 
+          _this.detailLoading = false;
           _this.userDetail = res.data.data; 
           }); 
          } 
@@ -236,7 +252,7 @@
         	var _this = this;
            this.$refs[form].validate((valid) => {
           if (valid) {
-            _this.userDetail.departId = '1';
+            
             if(_this.add){
               if(_this.userDetail.password01!=_this.userDetail.password){
                 _this.$message.error("两次输入的密码不一致!");
@@ -258,6 +274,7 @@
          operateData(type){
           var url ;
           var _this = this;
+          this.userDetail.departId = this.userDetail.depart.departId;
          if(type=='add'){
           url = this.$ports.user.insert;
           console.log("新增用户......");
@@ -272,7 +289,7 @@
               message: '操作成功！',
               type: 'success'
             });
-              _this.getUserList(1,5)
+              _this.getUserList(1,10)
               //操作成功刷新页面退出弹窗
               _this.conDetail=false;
              }else{

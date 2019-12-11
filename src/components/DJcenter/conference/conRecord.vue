@@ -74,14 +74,21 @@
     <span v-if="scope.row.status==2">已完成</span>
     <span v-if="scope.row.status==3">已过期</span>
     <span v-if="scope.row.status==4">已取消</span>
-    <span v-if="scope.row.status==0">未开始</span>
+    <span v-if="scope.row.status==0">未开始</span> 
+ 
     </template>
     </el-table-column>
     <el-table-column
       prop="creator"
       align="center"
       label="会议创建人" >
-    </el-table-column>  
+    </el-table-column> 
+    <el-table-column
+      :formatter="dateFormate"
+      prop="createTime"
+      align="center"
+      label="会议创建时间" >
+    </el-table-column> 
     <el-table-column 
       label="操作" 
       align="center">
@@ -155,6 +162,12 @@
       align="center"
       label="会议创建人" >
     </el-table-column>  
+     <el-table-column
+      :formatter="dateFormate"
+      prop="createTime"
+      align="center"
+      label="会议创建时间" >
+    </el-table-column>
     <el-table-column 
       label="操作" 
       align="center">
@@ -423,8 +436,9 @@
           },
           //日期格式化
           dateFormate(row, column, cellValue, index){
-          var num =  row.startTime.length;
-             return row.startTime.slice(0,num-2);
+          var num =  cellValue.length;
+             return cellValue.slice(0,num-2);
+
            }, 
           //会议记录查看详情
           checkDetail(row){

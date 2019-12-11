@@ -82,7 +82,13 @@
       prop="creator"
       align="center"
       label="会议创建人" width="150px">
-    </el-table-column>  
+    </el-table-column> 
+    <el-table-column
+      :formatter="dateFormate"
+      prop="createTime"
+      align="center"
+      label="会议创建时间" >
+    </el-table-column> 
     <el-table-column 
       label="操作" 
       align="center">
@@ -159,6 +165,12 @@
       align="center"
       label="会议创建人" >
     </el-table-column>  
+    <el-table-column
+      :formatter="dateFormate"
+      prop="createTime"
+      align="center"
+      label="会议创建时间" >
+    </el-table-column>
     <el-table-column 
       label="操作" 
       align="center">

@@ -10,10 +10,10 @@
 			  </el-breadcrumb>
 			</div> 
     <el-tabs class="tab_box" type="border-card" @tab-click="handleClick">
-    <el-tab-pane label="我创建的">
+   <!--  <el-tab-pane label="我创建的">
     	 <allRecordsCom :params="params"></allRecordsCom>
-    </el-tab-pane>
-    <el-tab-pane label="我参与的">
+    </el-tab-pane> -->
+    <el-tab-pane label="我创建的">
     	 <myRecordsCom :params="params1" v-on:changeTimes="changeTimes"></myRecordsCom>
     </el-tab-pane>
     </el-tabs>
@@ -37,9 +37,9 @@ export default{
      },
      params1:{
      	modal:"face",
-     	isFirst:false,
+     	isFirst:true,
      	times:0, 
-     	open:false
+     	open:true
      }
 	}
 	},

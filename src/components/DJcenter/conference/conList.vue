@@ -73,10 +73,10 @@
       align="center"
       label="会议状态" >
       <template slot-scope="scope">
-    <span v-if="scope.row.status==1">已取消</span>
-    <span v-if="scope.row.status==2">已过期</span>
-    <span v-if="scope.row.status==3">已完成</span>
-    <span v-if="scope.row.status==4">正在进行</span>
+    <span v-if="scope.row.status==1">正在进行</span>
+    <span v-if="scope.row.status==2">已完成</span>
+    <span v-if="scope.row.status==3">已过期</span>
+    <span v-if="scope.row.status==4">已取消</span>
     <span v-if="scope.row.status==0">未开始</span>
     </template>
     </el-table-column>
@@ -84,6 +84,12 @@
       prop="creator"
       align="center"
       label="会议创建人" >
+    </el-table-column> 
+    <el-table-column
+    :formatter="dateFormate"
+      prop="createTime"
+      align="center"
+      label="会议创建时间" >
     </el-table-column>  
     <el-table-column 
       label="操作" 
@@ -149,10 +155,10 @@
       align="center"
       label="会议状态" >
       <template slot-scope="scope">
-    <span v-if="scope.row.status==1">已取消</span>
-    <span v-if="scope.row.status==2">已过期</span>
-    <span v-if="scope.row.status==3">已完成</span>
-    <span v-if="scope.row.status==4">正在进行</span>
+    <span v-if="scope.row.status==1">正在进行</span>
+    <span v-if="scope.row.status==2">已完成</span>
+    <span v-if="scope.row.status==3">已过期</span>
+    <span v-if="scope.row.status==4">已取消</span>
     <span v-if="scope.row.status==0">未开始</span>
     </template>
     </el-table-column>
@@ -161,6 +167,12 @@
       align="center"
       label="会议创建人" >
     </el-table-column>  
+    <el-table-column
+    :formatter="dateFormate"
+      prop="createTime"
+      align="center"
+      label="会议创建时间" >
+    </el-table-column> 
     <el-table-column 
       label="操作" 
       align="center">
@@ -183,7 +195,7 @@
   
   <!-- 详情弹窗 -->
   <el-dialog  title="会议详情" :visible.sync="conDetail">
-  <el-form :model="meetingDetail" class="meeting_form">
+  <el-form v-loading="detailLoading" :model="meetingDetail" class="meeting_form">
     <el-form-item label="会议名称">
       <el-input v-model="meetingDetail.meetName" :readonly="true"></el-input>
     </el-form-item>
@@ -253,8 +265,11 @@
       {text:'正在进行',value:'4'},
     ],  
         //会议详情
-        meetingDetail:{}
+        meetingDetail:{},
+        //会议详情loading
+        detailLoading:true
 			}
+
 		},
 		created(){
     this.getMonth();
@@ -426,16 +441,19 @@
           },
           //日期格式化
       		dateFormate(row, column, cellValue, index){
-          var num =  row.startTime.length;
-             return row.startTime.slice(0,num-2);
+          var num =  cellValue.length;
+             return cellValue.slice(0,num-2);
+
            }, 
           //会议记录查看详情
           checkDetail(row){
              //查询单条数据v
              var _this=this;
+              _this.detailLoading = true;
            this.$http.get(this.$ports.conference.findById,{ 
             'id':row.id
            }).then(res=>{
+          _this.detailLoading = false;
           console.log("findbyId......");
           console.log(res.data); 
           _this.meetingDetail = res.data.data; 

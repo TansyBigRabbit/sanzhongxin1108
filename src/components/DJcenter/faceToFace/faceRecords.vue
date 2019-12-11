@@ -12,7 +12,7 @@
     <el-tabs class="tab_box" type="border-card" @tab-click="handleClick">
     <el-tab-pane label="所有记录">
     	 <allRecordsCom :params="params"></allRecordsCom>
-    </el-tab-pane>
+    </el-tab-pane> 
     <!-- <el-tab-pane label="我的记录">
     	 <myRecordsCom :params="params1" v-on:changeTimes="changeTimes"></myRecordsCom>
     </el-tab-pane> -->

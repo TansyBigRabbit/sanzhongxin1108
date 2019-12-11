@@ -22,7 +22,8 @@
 		<span>信访记录</span>
 	</div>
 	<el-table
-	class="table_body"
+	  class="table_body"
+    v-loading="recordLoading"
     :data="visitRecords"
     border
     style="width: 100%">
@@ -63,9 +64,10 @@
       label="操作" 
       align="center">
       <template slot-scope="scope">
-        <el-button @click="checkDetail('video',scope.row.audioAddress)" type="primary" size="small">视频记录</el-button>
-        <el-button @click="checkDetail('word',scope.row.appealRecord)" type="primary" size="small">文字记录</el-button>  
-       <!--  <el-button @click="checkDetail('audio',scope.row.videoAddress)" type="primary" size="small">音频记录</el-button>  -->
+        <div class="operateBox">
+        <el-button @click="checkDetail('video',scope.row.videoAddress)" type="primary" size="small">视频记录</el-button>
+        <el-button @click="checkDetail('word',scope.row.appealRecord)" type="primary" size="small">文字记录</el-button>    
+        </div> 
       </template>
     </el-table-column>
   </el-table>
@@ -80,12 +82,14 @@
         </el-pagination>
 
 
-<el-dialog  :title="dialogData.dialogTitle"  :visible.sync="conDetail">
+<el-dialog  :title="detialTitle"  :visible.sync="conDetail">
   <div class="dialogBox">
   <div v-if="videoInfo">
-     <video style="width: 100%" src="http://118.24.128.185:8080/kurento/E:/usr1561884556367_512926196402171622_%E5%BC%A0%E6%98%8E%E6%B3%8920190630164916_512926196402171622_%E5%BC%A0%E6%98%8E%E6%B3%89.mp4" controls="controls"></video>
+     <video style="width: 100%" :src="videoPath" controls="controls"></video>
   </div>
-  <div v-else></div>
+  <div v-else>
+    <div>{{recordText}}</div>
+  </div>
     
   </div>
 </el-dialog>
@@ -102,15 +106,19 @@
  		    visitRecords: [],
         visitDtail:{},
         searchForm:{},
-        departId:'',
-        dialogData:{
-          dialogTitle:'',
-          word:'',
-          videoUrl:''
-        },
+        departId:'', 
         conDetail:false,
         status:[{text:'已处理',value:0},{text:'未处理',value:1}],
-        videoInfo:true
+        //详情视频标志位
+        videoInfo:false,
+        //视频地址
+        videoPath:"",
+        //信访记录内容
+        recordText:"",
+        //
+        detialTitle:"",
+        //
+        recordLoading:true,
 			}
     },
 		created(){
@@ -139,7 +147,7 @@
              'size':size,
              'interviewDepartId': _this.departId,
              }).then(res=>{
-            this.createLoading=false
+            this.recordLoading=false
             console.log("获取上访接访记录......");
             console.log(res.data); 
             _this.visitRecords = res.data.data;
@@ -151,7 +159,24 @@
            
       		},
       		//查看信访记录详情
-      		checkDetail(row){
+      		checkDetail(type,data){
+            if(type=='video'){
+              this.detialTitle = "视频记录";
+              this.videoInfo = true;
+              this.videoPath = data
+            }else{
+              this.detialTitle = "文字记录";
+              this.videoInfo = false;
+              if(data.length>0){
+                 this.recordText = data[1].content
+                  if(!this.recordText){
+                    this.recordText="暂无信访记录";
+                  }
+              }else{
+                    this.recordText="暂无信访记录";
+              }
+             
+            }
            this.conDetail = true;
       		},
       		dateFormate(val){
@@ -164,7 +189,7 @@
 <style>
 	.table_title{
 		margin:25px 0;
-	}
+	} 
 	.table_title>span{
 		padding-left: 10px;
 		border-left: 3px solid #409EFF
@@ -178,4 +203,17 @@
   .dialogBox{
     padding:20px;
   }
+  .operateBox{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .operateBox>button{
+    width: 80%;
+    margin:5px 0;
+
+  }
+  .el-button + .el-button {
+    margin-left: 0px;
+}
 </style>

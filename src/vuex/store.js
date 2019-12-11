@@ -4,12 +4,16 @@ import vuex from 'vuex'
 vue.use(vuex);
 
 const state = {
-	login: false
+	login: false,
+	departInfo:[]
 }
 
 const mutations = {
 	changeLogState(state, val) {
 		return (state.login = val);
+	},
+	changeDepart(state,val){
+		return(state.departInfo = val);
 	}
 }
 

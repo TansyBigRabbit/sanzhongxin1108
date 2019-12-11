@@ -574,7 +574,7 @@ chatRsp(data) {
 			  	//结束直播 
 			    obj = {
 			    	id:'leaveRoom',
-			    	type:'academicLeave'
+			    	type:'academicFinish'
                  }
 			  }else if(type==2){
 			  	//退出房间

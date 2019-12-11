@@ -358,7 +358,7 @@
       // 	userId:window.localStorage.getItem("userId"),
       // })
       //查询上访者信息
-	  this.getPetitionInfo(obj.petitionIdCard);
+	  //this.getPetitionInfo(obj.petitionIdCard);
       this.initWebRTC(JSON.parse(window.localStorage.getItem("userInfo")).departId,"interviewJoin"); 
       //开启计时器，开始定时任务
       //this.time_fun();
@@ -371,7 +371,7 @@
       this.roomListFlag=false;
       //this.renderRoom();
       //查询上访者信息
-	  this.getPetitionInfo(this.$route.params.idCardList[0]);
+	  //this.getPetitionInfo(this.$route.params.idCardList[0]);
       this.initWebRTC(this.pageToData.departId,"petitionJoin"); 
     },
     createRoom(){ 
@@ -444,6 +444,7 @@
 			//返回的接访者的信息
 			case 'interviewJoinUserInfo':
 			    app.interviewJoinUserInfo(parsedMessage);
+			    break;
 			//
 			case 'newParticipantArrived':
 				app.onNewParticipant(parsedMessage);
@@ -540,6 +541,7 @@
     if(data.interviewJoinUserInfoList.length>0){
       this.interviewList = data.interviewJoinUserInfoList;
     }
+    this.petition = data.petionJoinUserInfoList[0];
 	},
        onExistingParticipants(msg) {
     var app = this;

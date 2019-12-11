@@ -47,10 +47,16 @@
     </el-table-column>
     <el-table-column
      :formatter="dateFormate"
-      prop="createTime"
-      align="activityStartTime"
+      prop="activityStartTime"
+      align="center"
       label="活动开始时间" >
-    </el-table-column>  
+    </el-table-column>
+    <el-table-column
+     :formatter="dateFormate"
+      prop="createTime"
+      align="center"
+      label="活动创建时间" >
+    </el-table-column>   
     <el-table-column 
       label="操作" 
       align="center">
@@ -142,7 +148,8 @@
       _this.acLoading=true;
       this.$http.get(this.$ports.activity.list,{
            'pageNum':num,
-           'size':size
+           'size':size,
+           'state':1
            }).then(res=>{
           console.log("获取活动列表数据......");
           console.log(res.data); 
@@ -172,9 +179,11 @@
             this.currentPage = currentPage;
             this.getActivityList(this.currentPage,this.pageSize);
           },
-          //日期格式化
-      		dateFormate(row, column, cellValue, index){ 
-             return row.activityStartTime.slice(0,row.activityStartTime.length-2);
+         //日期格式化
+          dateFormate(row, column, cellValue, index){
+          var num =  cellValue.length;
+             return cellValue.slice(0,num-2);
+
            }, 
           //活动记录查看详情
           checkDetail(obj){

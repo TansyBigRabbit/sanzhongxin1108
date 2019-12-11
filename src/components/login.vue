@@ -5,7 +5,7 @@
 		<el-main :style="note">
 			<div class="loginBox" 
             v-loading="loading"
-		    element-loading-text="登陆中..."
+		    element-loading-text="登录中..."
 		    element-loading-spinner="el-icon-loading"
 		    element-loading-background="rgba(0, 0, 0, 0.3)"
 			style="background-color: #f5f7fa;">
@@ -55,7 +55,7 @@
 								</el-row>
 								<el-row>
 									<el-col style="opacity:0.7">
-										<el-button id="login" @click="login" style="width:100%" type="primary">登录</el-button>
+										<el-button id="login" @click="login('')" style="width:100%" type="primary">登录</el-button>
 									</el-col>
 								</el-row>
 							</div>
@@ -122,7 +122,7 @@
 			login: function(type) {
 				let _this = this;
 				this.obj = {};
-				if(typeof type!="undefined"){
+				if(type!=''){
 	                this.obj={
 						userId: window.localStorage.getItem("account"),
 						password: window.localStorage.getItem("password")
@@ -138,11 +138,6 @@
 					console.log("登录者信息.....");
 					console.log(res.data);
 					if(res.data.code == 0) {
-						_this.loading=false; 
-						_this.$message({
-				          message: '登录成功！',
-				          type: 'success'
-				        });
 						loginInfoMain = res.data.data;
 						window.localStorage.setItem('userId', res.data.data.userId);
 						window.localStorage.setItem('idCard', res.data.data.idCard);
@@ -157,11 +152,9 @@
 						}else{
 							window.localStorage.setItem("check",false);
 						}
-						//
-						_this.$store.state.login = true;
-						_this.$router.push({
-							name: 'home' 
-						});
+						//查询所有部门的信息
+						_this.getAllDepartInfo();
+						
 					} else {
 						_this.loading=false;
 						_this.$message.error(res.data.msg);
@@ -188,7 +181,27 @@
 				});*/
 
 			},
-			 
+			getAllDepartInfo(){
+				var _this = this;
+             this.$http.get(this.$ports.department,{
+		        departId:JSON.parse(window.localStorage.getItem('userInfo')).departId
+		      }).then(res=>{
+		          if(res.data.code==0){
+		          	_this.loading=false; 
+						_this.$message({
+				          message: '登录成功！',
+				          type: 'success'
+				        });
+		          	window.localStorage.setItem('departInfo',JSON.stringify(res.data.data)); 
+		            _this.$store.state.login = true;
+						_this.$router.push({
+							name: 'home' 
+						});
+		          } 
+		        //
+						
+		     }); 
+			},
 		}
 	}
 </script>

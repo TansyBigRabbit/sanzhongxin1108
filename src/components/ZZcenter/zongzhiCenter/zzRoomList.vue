@@ -2,7 +2,7 @@
 <template>
 	<div> 
 		<!-- <readIdCard :params="params" @enterRoom="enterRoom($event)"></readIdCard> -->
-		<div v-if="!roomFlag">
+		<div v-if="roomFlag">
 			<div class="breadcrumb">
 			  <el-breadcrumb separator="/">
 			  <el-breadcrumb-item :to="{ path: '/home' }">首页</el-breadcrumb-item>
