@@ -127,12 +127,14 @@ export default{
      if(that.params.isFirst){
       if(that.params.modal=="zongzhi"){
         console.log("zongzhi 第一次触发");
+        that.type = "zz";
             that.getDataList();
-            that.type = "zz";
+            
       }else{
         console.log("face 第一次触发");
+          that.type = "face";
             that.getDataList();
-            that.type = "face";
+          
       }
      }
   },

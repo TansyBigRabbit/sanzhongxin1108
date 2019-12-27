@@ -26,7 +26,7 @@ import zzRecords from './components/ZZcenter/zongzhiCenter/zzRecords'
 import zzRoomList from './components/ZZcenter/zongzhiCenter/zzRoomList'
 import zzStatic from './components/ZZcenter/zongzhiCenter/zzStatic'
 import zzMyRecord from './components/ZZcenter/zongzhiCenter/zzMyRecord'
-
+import zzVideoRoom from './components/ZZcenter/zongzhiCenter/zzVideoRoom'
 //学宣
 import StudyVideoList from './components/ZZcenter/studySys/studyVideoList'
 import StudyRoomList from './components/ZZcenter/studySys/StudyRoomList'
@@ -143,6 +143,10 @@ export const routes = [{
 			path: '/home/zzMyRecord',
 			name: 'zzMyRecord',
 			component: zzMyRecord,
+		},{
+			path: '/home/zzVideoRoom',
+			name: 'zzVideoRoom',
+			component: zzVideoRoom,
 		},
 		//学宣
 		{

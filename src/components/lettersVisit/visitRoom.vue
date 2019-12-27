@@ -234,6 +234,7 @@
 		    	pageToDepart:this.$route.params.departId,
 		    	pageToRoom:this.$route.params.roomNum,
 		    	departId:this.$route.params.departId,
+		    	petitionInfo:this.$route.params.petitionInfo 
 		    },
 		    //上访者
 		    petition:{
@@ -372,6 +373,7 @@
       //this.renderRoom();
       //查询上访者信息
 	  //this.getPetitionInfo(this.$route.params.idCardList[0]);
+	  this.petition =this.pageToData.petitionInfo
       this.initWebRTC(this.pageToData.departId,"petitionJoin"); 
     },
     createRoom(){ 
@@ -381,7 +383,8 @@
 	  this.roomListFlag=false; 
 	  //self.renderRoom();
 	  //查询上访者信息
-	  this.getPetitionInfo(this.$route.params.idCardList[0]);
+	  //this.getPetitionInfo(this.$route.params.idCardList[0]);
+	  _this.petition =this.pageToData.petitionInfo
 	  this.initWebRTC(this.pageToData.departId,"petitionCreate");
 
         },

@@ -193,17 +193,17 @@
 				var videoStream = options.videoStream;
 				var audioStream = options.audioStream; 
 				//1113
-				var mediaConstraints = {
-					audio:false,
-					video:{
-						mandatory:{
-							maxHeight:240,
-							maxWidth:320,
-							minFrameRate:15
-						}
-					}
-				}
-				//var mediaConstraints = options.mediaConstraints;
+				// var mediaConstraints = {
+				// 	audio:false,
+				// 	video:{
+				// 		mandatory:{
+				// 			maxHeight:240,
+				// 			maxWidth:320,
+				// 			minFrameRate:15
+				// 		}
+				// 	}
+				// }
+				var mediaConstraints = options.mediaConstraints;
 				var connectionConstraints = options.connectionConstraints;
 				var pc = options.peerConnection;
 				var sendSource = options.sendSource || 'webcam';

@@ -2,7 +2,7 @@ var PREFIX = "webrtc_conference"
 var SVRDOMAIN = "";
 
 var watchWebRtcPeer;
-//系统登录者的信息
+//系统登录者的信息 
 var loginInfoMain = {};
 //创建者\加入者type 
 //petitionCreate\meetCreate\petitionJoin\meetJoin

@@ -19,13 +19,13 @@
 		<!-- <el-button type="primary" style="width: 150px" @click="createRoomModel=true">创建房间</el-button> -->
         <div>
 			<el-row style="padding-top: 15px;">
-				<el-col v-if="roomList.length>0" v-for="(item,index) in roomList" :data-roomnum="item.info.roomnum" :key="index" class="margin_r roomBox" :span="5">
+				<el-col v-if="roomList.length>0" v-for="(item,index) in roomList" :data-roomnum="item.comprehensiveTreatmentName" :key="index" class="margin_r roomBox" :span="5">
 				 <el-card :body-style="{ padding: '5px' }">
 			      <img :src="imgUrl" class="image">
 			      <div style="padding: 14px;">
-			        <span>{{item.info.roomnum}}</span>
+			        <span>{{item.comprehensiveTreatmentName}}</span>
 			        <div class="bottom clearfix">
-			          <el-button v-if='item.info.memsize<6' type="text" @click="joinRoom(item)">加入房间</el-button>
+			          <el-button v-if='item.totalNumPeople<6' type="text" @click="checkUserType(item)">加入房间</el-button>
 			          <span v-else>房间满员，无法加入</span>
 			        </div>
 			      </div>
@@ -34,13 +34,21 @@
 				<el-card v-if="!hasRoom||roomList.length==0" class="letterCard">
 					{{roomTextInfo}}
 				</el-card>  
+				
 			</el-row>
+			<!-- 分页插件 -->
+				 <el-pagination
+			        v-if="roomList.length>0"
+			        style="text-align: center;"
+			        layout="prev, pager, next"
+			        background
+			        :total="roomTotal"
+			        :current-page="currentPage"
+			        @current-change="handleCurrentChange">
+			      </el-pagination>
 		</div> 
-		</div>
-         <!--直播间-->
-		<div v-else>
-			<liveRoom :params01="params01"></liveRoom>
-		</div>
+		</div 
+        
 		<!-- 输入房间名 -->
 		<el-dialog
 		  title="创建房间"
@@ -57,6 +65,7 @@
 </template>
 
 <script>
+	var that;
 	import readIdCard from "../../childComponent/readIdCard"
 	import liveRoom from "../../childComponent/liveRoom"
 	export default{
@@ -65,17 +74,22 @@
 			return{
 				params:{show:true},
 				roomFlag:true,
+				//
+				currentPage:1,
+				roomTotal:0,
 				//传给直播间的参数
 				params01:{
 
 				},
 				imgUrl:require('../../../assets/images/room_bg.png'),
-				roomList:[{
-					info:{
-						roomnum:"测试数据01",
-						memsize:7,
-					}
-				}],
+				roomList:[
+				// {
+				// 	info:{
+				// 		roomnum:"测试数据01",
+				// 		memsize:7,
+				// 	}
+				// }
+				],
 				hasRoom:true,
 				createRoomDialog:false,
 				createRoomName:"",//创建房间时输入的房间名称
@@ -83,19 +97,80 @@
 			}
 		},
 		created(){
-
+        that = this;
+        that.getzzRoomList();
 		},
 		methods:{
-		joinRoom(obj){
-
+		getzzRoomList(){
+		console.log("获取房间列表");
+        that.$http.get(that.$ports.zzRoomList,{
+        	pageNum:that.currentPage,
+        	size:10,
+        	stateList:'0,1'
+        }).then(res=>{
+        	console.log(res.data);
+        	that.roomList = res.data.data;
+        	that.roomTotal = res.data.page.total;
+        })
+		},
+		//查询当前登录者的角色（创建者/参与者）
+		checkUserType(obj){
+		this.createRoomDialog = false; 
+        that.$http.get(that.$ports.zzRoomDetail,{
+        	totalId:obj.id,
+        	idCard:localStorage.getItem('idCard')
+        }).then(res=>{
+        	console.log(res.data);
+        	if(res.data.data.length>0){
+            if(res.data.data[0].type==0){
+             that.$router.push({
+                name:'zzVideoRoom', 
+                params:{
+                roleType:"comprehensiveTreatmentCreate",
+                roomNum:obj.comprehensiveTreatmentName,
+                room:obj.roomName,  
+                interviewType:"xxx"
+                }});
+            }else{
+             that.joinRoom(obj);
+            }
+        	}else{
+             that.joinRoom(obj);
+        	}
+        })
+		},
+		joinRoom(obj){  
+			//1103 创建面谈房间
+			that.$router.push({
+                name:'zzVideoRoom', 
+                params:{
+                roleType:"comprehensiveTreatmentJoin",
+                roomNum:obj.comprehensiveTreatmentName,
+                room:obj.roomName,  
+                interviewType:"xxx"
+                }});
 		},
 		createRoom(){
-			this.createRoomDialog = false;
-			this.roomFlag = false;
+			this.createRoomDialog = false; 
+			//1103 创建面谈房间
+			that.$router.push({
+                name:'zzVideoRoom', 
+                params:{
+                roleType:"comprehensiveTreatmentCreate",
+                roomNum:that.createRoomName,  
+                room:"",  
+                interviewType:"xxx"
+                }});
 		},
 		showCreateModal(){
 			this.createRoomDialog = true;
 			this.createRoomName = "";
+		},
+		handleCurrentChange(val){
+			console.log("当前页数"+val);
+			that.currentPage = val;
+			that.getzzRoomList();
+
 		}
 		}
 	}
